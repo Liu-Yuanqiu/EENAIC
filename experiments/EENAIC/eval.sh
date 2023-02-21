@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=3 python eval.py --folder ./experiments/EENAIC/ --resume 196
