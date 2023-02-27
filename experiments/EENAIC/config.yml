@@ -10,21 +10,21 @@ TRAIN:
 
 ############################ TEST ############################  
 TEST:
-  BATCH_SIZE: 32
+  BATCH_SIZE: 1
 
 ############################ DATA_LOADER ############################
 DATA_LOADER:
   NUM_WORKERS: 8
   SHUFFLE: True
-  TRAIN_ATT_FEATS: './mscoco/feature/coco2014'
-  VAL_ATT_FEATS: './mscoco/feature/coco2014'
-  TEST_ATT_FEATS: './mscoco/feature/coco2014'
-  TRAIN_ID: './mscoco/misc/ids2path_json/coco_train_ids2path.json'
-  VAL_ID: './mscoco/misc/ids2path_json/coco_val_ids2path.json'
-  TEST_ID: './mscoco/misc/ids2path_json/coco_test_ids2path.json'
-  TEST_4W_ID: './mscoco/misc/ids2path_json/coco_test4w_ids2path.json'
-  INPUT_SEQ_PATH: './mscoco/sent/coco_train_input_kd.pkl'
-  TARGET_SEQ_PATH: './mscoco/sent/coco_train_target_kd.pkl'
+  TRAIN_ATT_FEATS: '../mscoco/feature/coco2014'
+  VAL_ATT_FEATS: '../mscoco/feature/coco2014'
+  TEST_ATT_FEATS: '../mscoco/feature/coco2014'
+  TRAIN_ID: '../mscoco/misc/ids2path_json/coco_train_ids2path.json'
+  VAL_ID: '../mscoco/misc/ids2path_json/coco_val_ids2path.json'
+  TEST_ID: '../mscoco/misc/ids2path_json/coco_test_ids2path.json'
+  TEST_4W_ID: '../mscoco/misc/ids2path_json/coco_test4w_ids2path.json'
+  INPUT_SEQ_PATH: '../mscoco/sent/coco_train_input_kd.pkl'
+  TARGET_SEQ_PATH: '../mscoco/sent/coco_train_target_kd.pkl'
   SEQ_PER_IMG: 1
   MAX_FEAT: -1
 
@@ -126,16 +126,16 @@ LOSSES:
 SCORER:
   TYPES: ['CIDEr']
   WEIGHTS: [1.0]
-  GT_PATH: './mscoco/misc/coco_train_gts.pkl'
-  CIDER_CACHED: './mscoco/misc/coco_train_cider.pkl'
+  GT_PATH: '../mscoco/misc/coco_train_gts.pkl'
+  CIDER_CACHED: '../mscoco/misc/coco_train_cider.pkl'
   
 ############################ INFERENCE ############################
 INFERENCE:
-  VOCAB: './mscoco/txt/coco_vocabulary.txt'
+  VOCAB: '../mscoco/txt/coco_vocabulary.txt'
   ID_KEY: 'image_id'
   CAP_KEY: 'caption'
   EVAL: 'COCO'
-  VAL_ANNFILE: './mscoco/misc/captions_val5k.json'
-  TEST_ANNFILE: './mscoco/misc/captions_test5k.json'
+  VAL_ANNFILE: '../mscoco/misc/captions_val5k.json'
+  TEST_ANNFILE: '../mscoco/misc/captions_test5k.json'
   BEAM_SIZE: 1
   GREEDY_DECODE: True

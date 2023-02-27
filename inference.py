@@ -2,6 +2,7 @@ import os
 import sys
 import numpy as np
 import torch
+import torch.nn.functional as F
 import tqdm
 import json
 import argparse
@@ -25,26 +26,33 @@ class OnlineTester(object):
             self.ids2path = json.load(f)
             self.eval_ids = np.array(list(self.ids2path.keys()))
         
-        self.eval_loader = data_loader.load_val(eval_ids, feats_folder)
+        self.eval_loader = data_loader.load_val(eval_ids, feats_folder, test=1)
 
-    def __call__(self, model, rname):
+    def __call__(self, model, rname, start, end):
         model.eval()
         
+        all_time = .0
+
         results = []
         with torch.no_grad():
             for _, (indices, att_feats) in enumerate(tqdm.tqdm(self.eval_loader)):
                 ids = self.eval_ids[indices]
                 att_feats = att_feats.cuda()
-                out = model.module.decode(att_feats)
+                att_feats = model.module.inference_pre(att_feats)
+                start.record()
+                out = model.module.inference(att_feats)
                 prob, seq = torch.max(out, -1)
-
+                end.record()
+                torch.cuda.synchronize()
+                all_time += start.elapsed_time(end)
+                
                 sents = utils.decode_sequence(self.vocab, seq.data)
                 sents = utils.clip_chongfu(sents)
                 for sid, sent in enumerate(sents):
                     # {'image_id': ***, 'caption': 'word1 word2 word3 ...'}
                     result = {cfg.INFERENCE.ID_KEY: int(ids[sid]), cfg.INFERENCE.CAP_KEY: sent}
                     results.append(result)
-                
+            print(all_time/len(self.eval_loader))    
         result_folder = os.path.join(cfg.ROOT_DIR, 'result')
         if not os.path.exists(result_folder):
             os.mkdir(result_folder)
@@ -87,6 +95,10 @@ if __name__ == '__main__':
                 torch.load(snapshot_path("caption_model", args.resume),
                     map_location=lambda storage, loc: storage)
             )
+    
+    start = torch.cuda.Event(enable_timing=True)
+    end = torch.cuda.Event(enable_timing=True)
+
     print("load checkpoint "+str(args.resume))
     train_ids = './mscoco/misc/ids2path_json/coco_train_ids2path.json'
     eval_ids = './mscoco/misc/ids2path_json/coco_val_ids2path.json'
@@ -94,4 +106,4 @@ if __name__ == '__main__':
     test4w_ids = './mscoco/misc/ids2path_json/coco_test4w_ids2path.json'
     att_feats = './mscoco/feature/coco2014'
     tester = OnlineTester(test4w_ids, att_feats)
-    tester(model, "test4w")
+    tester(model, "test4w", start, end)

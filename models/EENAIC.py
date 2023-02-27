@@ -78,3 +78,11 @@ class EENAIC(nn.Module):
         _, encoder_out = self.encoder(att_feats)
         decoder_out = self.decoder(encoder_out)
         return F.log_softmax(decoder_out, dim=-1)
+    
+    def inference_pre(self, att_feats):
+        return self.backbone(att_feats)
+    def inference(self, att_feats):
+        att_feats = self.att_embed(att_feats)
+        _, encoder_out = self.encoder(att_feats)
+        decoder_out = self.decoder(encoder_out)
+        return F.log_softmax(decoder_out, dim=-1)

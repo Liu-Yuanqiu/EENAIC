@@ -45,7 +45,8 @@ class Decoder_NA(nn.Module):
         batch_size = encoder_out.shape[0]
         seq_len = cfg.MODEL.SEQ_LEN
         text_emb = self.img2text(encoder_out)
-        vocab = self.word_embed(torch.arange(self.vocab_size).cuda())
+        # vocab = self.word_embed(torch.arange(self.vocab_size).cuda())
+        vocab = self.word_embed.weight
         word_prob = text_emb @ vocab.t()
         word_prob = self.softmax(word_prob)
         word_emb = text_emb + word_prob @ vocab

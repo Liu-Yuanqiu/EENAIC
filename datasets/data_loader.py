@@ -42,7 +42,7 @@ def load_train(distributed, epoch, coco_set):
     )
     return loader
 
-def load_val(image_ids_path, att_feats_folder):
+def load_val(image_ids_path, att_feats_folder, test=0):
     coco_set = CocoDataset(
         image_ids_path = image_ids_path, 
         input_seq = None, 
@@ -51,10 +51,13 @@ def load_val(image_ids_path, att_feats_folder):
         seq_per_img = 1, 
         max_feat_num = cfg.DATA_LOADER.MAX_FEAT
     )
-
+    if test==0:
+        batch_size = cfg.TEST.BATCH_SIZE
+    else:
+        batch_size = 1
     loader = torch.utils.data.DataLoader(
         coco_set, 
-        batch_size = cfg.TEST.BATCH_SIZE,
+        batch_size = batch_size,
         shuffle = False, 
         num_workers = cfg.DATA_LOADER.NUM_WORKERS, 
         drop_last = False, 
